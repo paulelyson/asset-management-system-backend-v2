@@ -1,11 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { CreateSchoolDto } from './dto/create-school.dto';
 import { UpdateSchoolDto } from './dto/update-school.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { School, SchoolDocument } from './schemas/school.schema';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class SchoolService {
-  create(createSchoolDto: CreateSchoolDto) {
-    return 'This action adds a new school';
+  constructor(
+    @InjectModel(School.name) private schoolModel: Model<SchoolDocument>,
+  ) {}
+  async create(createSchoolDto: CreateSchoolDto) {
+    const school = new this.schoolModel(createSchoolDto);
+    return school.save();
   }
 
   findAll() {
