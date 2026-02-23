@@ -4,6 +4,7 @@ import { UpdateSchoolDto } from './dto/update-school.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { School, SchoolDocument } from './schemas/school.schema';
 import { Model } from 'mongoose';
+import { QuerySchoolDto } from './dto/query-school.dto';
 
 @Injectable()
 export class SchoolService {
@@ -17,6 +18,10 @@ export class SchoolService {
 
   findAll() {
     return `This action returns all school`;
+  }
+
+  find(query: QuerySchoolDto) {
+    return this.schoolModel.find().exec();
   }
 
   findOne(id: number) {

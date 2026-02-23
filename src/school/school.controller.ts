@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { SchoolService } from './school.service';
 import { CreateSchoolDto } from './dto/create-school.dto';
 import { UpdateSchoolDto } from './dto/update-school.dto';
+import { QuerySchoolDto } from './dto/query-school.dto';
 
 @Controller('school')
 export class SchoolController {
@@ -13,9 +14,9 @@ export class SchoolController {
   }
 
   @Get()
-  findAll() {
-    return this.schoolService.findAll();
-  }
+  find(@Query() query: QuerySchoolDto) {
+  return this.schoolService.find(query);
+}
 
   @Get(':id')
   findOne(@Param('id') id: string) {
