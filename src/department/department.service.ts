@@ -13,17 +13,18 @@ export class DepartmentService {
     private departmentModel: Model<DepartmentDocument>,
   ) {}
 
-  create(createDepartmentDto: CreateDepartmentDto) {
+  async create(createDepartmentDto: CreateDepartmentDto) {
     const department = new this.departmentModel(createDepartmentDto);
-    return department.save();
+    return await department.save();
   }
 
   findAll() {
     return `This action returns all department`;
   }
 
-  find(query: QueryDepartmentDto) {
-    return this.departmentModel.find();
+  async find(query: QueryDepartmentDto) {
+     let populate = [{ path: 'school', select: 'code name' }];
+    return await this.departmentModel.find().populate(populate).lean().exec();
   }
 
   findOne(id: number) {

@@ -22,7 +22,7 @@ export class Department {
 
   @Prop({
     type: Types.ObjectId,
-    ref: 'school',
+    ref: 'School',
     required: true,
   })
   school: Types.ObjectId;
