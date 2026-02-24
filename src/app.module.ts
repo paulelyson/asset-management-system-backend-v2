@@ -5,6 +5,7 @@ import { UserModule } from './user/user.module';
 import { SchoolModule } from './school/school.module';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { DepartmentModule } from './department/department.module';
 
 const DATABASE = process.env.DATABASE || 'mongodb://127.0.0.1:27017/asset_mgt_local';
 
@@ -16,6 +17,7 @@ const DATABASE = process.env.DATABASE || 'mongodb://127.0.0.1:27017/asset_mgt_lo
     MongooseModule.forRoot(DATABASE),
     UserModule,
     SchoolModule,
+    DepartmentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
