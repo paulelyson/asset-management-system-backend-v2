@@ -15,8 +15,8 @@ export class SchoolController {
 
   @Get()
   find(@Query() query: QuerySchoolDto) {
-  return this.schoolService.find(query);
-}
+    return this.schoolService.find(query);
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
