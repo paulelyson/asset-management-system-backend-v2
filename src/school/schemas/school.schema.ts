@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, HydratedDocument } from 'mongoose';
 
-export type SchoolDocument = School & Document;
+export type SchoolDocument =  HydratedDocument<School>
 
 @Schema({ timestamps: true })
 export class School {
