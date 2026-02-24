@@ -15,8 +15,8 @@ export class DepartmentController {
 
   @Get()
   find(@Query() query: QueryDepartmentDto) {
-      return this.departmentService.find(query);
-    }
+    return this.departmentService.find(query);
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
