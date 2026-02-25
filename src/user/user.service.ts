@@ -13,17 +13,17 @@ export class UserService {
     private userModel: Model<UserDocument>,
   ) {}
 
-  async create(createUserDto: CreateUserDto) {
+  create(createUserDto: CreateUserDto) {
     const user = new this.userModel(createUserDto);
-    return await user.save();
+    return user.save();
   }
 
   findAll() {
     return `This action returns all user`;
   }
 
-  async find(query: QueryUserDto) {
-    return await this.userModel.find().lean().exec();
+  find(query: QueryUserDto) {
+    return this.userModel.find().lean().exec();
   }
 
   findOne(id: number) {

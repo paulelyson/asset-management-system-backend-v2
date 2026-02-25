@@ -11,7 +11,8 @@ export class SchoolService {
   constructor(
     @InjectModel(School.name) private schoolModel: Model<SchoolDocument>,
   ) {}
-  async create(createSchoolDto: CreateSchoolDto) {
+  
+  create(createSchoolDto: CreateSchoolDto) {
     const school = new this.schoolModel(createSchoolDto);
     return school.save();
   }
