@@ -23,8 +23,7 @@ export class UserService {
   }
 
   async find(query: QueryUserDto) {
-    let populate = [{ path: 'school', select: 'code name' }];
-    return await this.userModel.find().populate(populate).lean().exec();
+    return await this.userModel.find().lean().exec();
   }
 
   findOne(id: number) {

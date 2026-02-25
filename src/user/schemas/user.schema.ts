@@ -62,7 +62,7 @@ export class User {
   ])
   roles: { role: UserRole; department: Types.ObjectId }[];
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: true, select: false })
   password: string;
 
   @Prop({ type: Boolean, default: false })
