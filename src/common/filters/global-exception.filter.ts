@@ -11,7 +11,7 @@ import {
 import { Error as MongooseError } from 'mongoose';
 
 @Catch()
-export class MongoExceptionFilter implements ExceptionFilter {
+export class GlobalExceptionFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
@@ -19,6 +19,8 @@ export class MongoExceptionFilter implements ExceptionFilter {
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Internal server error';
     let errors: any = null;
+
+    console.log(exception)
 
     // ✅ 1️⃣ Mongoose validation error
     if (exception?.name === 'ValidationError') {
@@ -42,6 +44,15 @@ export class MongoExceptionFilter implements ExceptionFilter {
         [field]: `${value} already exists`,
       };
     }
+
+    // ✅ 2️⃣ Dto/ Bad Request  duplicate key error
+    else if (exception instanceof BadRequestException) {
+      status = exception.getStatus()
+      const response = exception.getResponse();;
+      message = response['error'] ?? "Bad Request";
+      errors = response["message"] ?? []
+    }
+
 
     response.status(status).json({
       success: false,
