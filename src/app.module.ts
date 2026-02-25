@@ -6,6 +6,7 @@ import { SchoolModule } from './school/school.module';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DepartmentModule } from './department/department.module';
+import { EquipmentModule } from './equipment/equipment.module';
 
 const DATABASE = process.env.DATABASE || 'mongodb://127.0.0.1:27017/asset_mgt_local';
 
@@ -18,6 +19,7 @@ const DATABASE = process.env.DATABASE || 'mongodb://127.0.0.1:27017/asset_mgt_lo
     UserModule,
     SchoolModule,
     DepartmentModule,
+    EquipmentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
