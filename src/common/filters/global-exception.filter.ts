@@ -20,8 +20,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     let message = 'Internal server error';
     let errors: any = null;
 
-    console.log(exception)
-
     // ✅ 1️⃣ Mongoose validation error
     if (exception?.name === 'ValidationError') {
       status = HttpStatus.BAD_REQUEST;

@@ -8,7 +8,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true, // removes extra properties
+      // whitelist: true, // removes extra properties
       transform: true, // converts types (string → number, etc.)
     }),
   );
