@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { EquipmentAvailability, EquipmentCondition, EquipmentInventoryType, EquipmentStatus, Matter } from '../enums/equipment.enum';
+import { EquipmentAvailability, EquipmentCondition, EquipmentStatus, EquipmentTag, Matter } from '../enums/equipment.enum';
 import { HydratedDocument, Types } from 'mongoose';
 
 @Schema({ _id: false })
@@ -40,7 +40,7 @@ export class Equipment {
   serialNo: string;
 
   @Prop({ required: true, trim: true })
-  equipmentType: string;
+  type: string;
 
   @Prop({ type: [String], default: [] })
   categories: string[];
@@ -85,7 +85,7 @@ export class Equipment {
   remarks: string;
 
   @Prop({ default: false })
-  inventorytag: boolean;
+  hasTag: boolean;
 
   @Prop()
   checkedBy: string;
@@ -93,8 +93,8 @@ export class Equipment {
   @Prop({ type: Types.ObjectId, ref: 'Department', required: true })
   department: Types.ObjectId;
 
-  @Prop({ enum: EquipmentInventoryType })
-  inventorytype: EquipmentInventoryType;
+  @Prop({ enum: EquipmentTag })
+  tag: EquipmentTag;
 
   @Prop()
   location: string;
@@ -109,7 +109,7 @@ export class Equipment {
     enum: EquipmentAvailability,
     default: EquipmentAvailability.AVAILABLE,
   })
-  availability: EquipmentAvailability;
+  availability?: EquipmentAvailability;
 
   @Prop({ default: false, select: false }) // hidden unless explicitly selected
   deleted?: boolean;

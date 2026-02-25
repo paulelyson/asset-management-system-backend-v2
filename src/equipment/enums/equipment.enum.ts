@@ -18,7 +18,7 @@ export enum EquipmentAvailability {
   UNRETURNED = 'unreturned',
 }
 
-export enum EquipmentInventoryType {
+export enum EquipmentTag {
   INVENTORY = 'inventory',
   NON_INVENTORY = 'non_inventory',
 }
