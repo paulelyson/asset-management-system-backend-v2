@@ -8,6 +8,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { DepartmentModule } from './department/department.module';
 import { EquipmentModule } from './equipment/equipment.module';
 import { CourseModule } from './course/course.module';
+import { TermModule } from './term/term.module';
 
 const DATABASE = process.env.DATABASE || 'mongodb://127.0.0.1:27017/asset_mgt_local';
 
@@ -22,6 +23,7 @@ const DATABASE = process.env.DATABASE || 'mongodb://127.0.0.1:27017/asset_mgt_lo
     DepartmentModule,
     EquipmentModule,
     CourseModule,
+    TermModule,
   ],
   controllers: [AppController],
   providers: [AppService],
