@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { TermService } from './term.service';
 import { CreateTermDto } from './dto/create-term.dto';
 import { UpdateTermDto } from './dto/update-term.dto';
+import { QueryTermDto } from './dto/query-term.dto';
 
 @Controller('term')
 export class TermController {
@@ -13,8 +14,8 @@ export class TermController {
   }
 
   @Get()
-  findAll() {
-    return this.termService.findAll();
+  find(@Query() query: QueryTermDto) {
+    return this.termService.find(query);
   }
 
   @Get(':id')
