@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { CourseOfferingService } from './course-offering.service';
 import { CreateCourseOfferingDto } from './dto/create-course-offering.dto';
 import { UpdateCourseOfferingDto } from './dto/update-course-offering.dto';
+import { QueryCourseOfferingDto } from './dto/query-course-offering.dto';
 
 @Controller('course-offering')
 export class CourseOfferingController {
@@ -13,8 +14,8 @@ export class CourseOfferingController {
   }
 
   @Get()
-  findAll() {
-    return this.courseOfferingService.findAll();
+  find(@Query() query: QueryCourseOfferingDto) {
+    return this.courseOfferingService.find(query);
   }
 
   @Get(':id')
