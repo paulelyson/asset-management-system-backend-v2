@@ -10,6 +10,7 @@ import { EquipmentModule } from './equipment/equipment.module';
 import { CourseModule } from './course/course.module';
 import { TermModule } from './term/term.module';
 import { CourseOfferingModule } from './course-offering/course-offering.module';
+import { LocationModule } from './location/location.module';
 
 const DATABASE = process.env.DATABASE || 'mongodb://127.0.0.1:27017/asset_mgt_local';
 
@@ -26,6 +27,7 @@ const DATABASE = process.env.DATABASE || 'mongodb://127.0.0.1:27017/asset_mgt_lo
     CourseModule,
     TermModule,
     CourseOfferingModule,
+    LocationModule,
   ],
   controllers: [AppController],
   providers: [AppService],
