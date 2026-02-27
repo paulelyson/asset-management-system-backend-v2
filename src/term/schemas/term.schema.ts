@@ -15,12 +15,12 @@ export class Term {
   @Prop({
     required: true,
   })
-  start_date: Date;
+  startDate: Date;
 
   @Prop({
     required: true,
   })
-  end_date: Date;
+  endDate: Date;
 
   @Prop({
     type: String,
