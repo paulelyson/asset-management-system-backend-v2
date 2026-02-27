@@ -22,7 +22,8 @@ export class CourseService {
   }
 
   find(query: QueryCourseDto) {
-    return this.courseModel.find().lean().exec();
+    const populate = [{ path: 'department', select: 'code name school' }];
+    return this.courseModel.find().populate(populate).lean().exec();
   }
 
   findOne(id: number) {
