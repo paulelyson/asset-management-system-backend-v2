@@ -1,11 +1,14 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Types } from "mongoose";
+import { HydratedDocument, Types } from "mongoose";
 import { DateOfUse, DateOfUseSchema } from "./date-of-use.schema";
 import { BorrowedEquipmentItem, BorrowedEquipmentItemSchema } from "./borrowed-equipment-item.schema";
 import { BorrowPurpose } from "../enums/borrow-purpose.enum";
 
+export type BorrowedEquipmentDocument = HydratedDocument<BorrowedEquipment>;
+
+
 @Schema({ timestamps: true })
-export class BorrowedEquipment extends Document {
+export class BorrowedEquipment {
   @Prop({
     type: Types.ObjectId,
     ref: 'User',

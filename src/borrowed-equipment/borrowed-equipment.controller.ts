@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { BorrowedEquipmentService } from './borrowed-equipment.service';
 import { CreateBorrowedEquipmentDto } from './dto/create-borrowed-equipment.dto';
 import { UpdateBorrowedEquipmentDto } from './dto/update-borrowed-equipment.dto';
+import { QueryBorrowedEquipmentDto } from './dto/query-borrowed-equipment.dto';
 
 @Controller('borrowed-equipment')
 export class BorrowedEquipmentController {
@@ -13,8 +14,8 @@ export class BorrowedEquipmentController {
   }
 
   @Get()
-  findAll() {
-    return this.borrowedEquipmentService.findAll();
+  find(@Query() query: QueryBorrowedEquipmentDto) {
+    return this.borrowedEquipmentService.find(query);
   }
 
   @Get(':id')

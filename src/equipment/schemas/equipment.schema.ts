@@ -36,7 +36,7 @@ export type EquipmentDocument = HydratedDocument<Equipment>;
   versionKey: false,
 })
 export class Equipment {
-  @Prop({ required: true, unique: true, trim: true })
+  @Prop({ required: true, trim: true })
   serialNo: string;
 
   @Prop({ required: true, trim: true })
