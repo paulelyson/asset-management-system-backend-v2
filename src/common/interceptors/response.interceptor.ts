@@ -7,7 +7,7 @@ import {
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-interface ApiResponse<T> {
+export interface ApiResponse<T> {
   data: T;
   message: string;
   success: boolean;
@@ -23,9 +23,9 @@ export class ResponseInterceptor<T>
     next: CallHandler,
   ): Observable<ApiResponse<T>> {
     return next.handle().pipe(
-      map((data) => ({
-        data,
-        message: 'Request successful',
+      map((resp: any) => ({
+        data: resp?.data ?? resp,
+        message: resp?.message ?? 'Request successful',
         success: true,
       })),
     );
