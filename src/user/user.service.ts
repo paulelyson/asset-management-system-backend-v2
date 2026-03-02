@@ -8,6 +8,19 @@ import { QueryUserDto } from './dto/query-user.dto';
 
 @Injectable()
 export class UserService {
+  private readonly users = [
+    {
+      userId: 1,
+      username: 'john',
+      password: 'changeme',
+    },
+    {
+      userId: 2,
+      username: 'maria',
+      password: 'guess',
+    },
+  ];
+
   constructor(
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
@@ -26,8 +39,8 @@ export class UserService {
     return this.userModel.find().lean().exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  findOne(username: string) {
+    return this.users.find(user => user.username === username);
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {

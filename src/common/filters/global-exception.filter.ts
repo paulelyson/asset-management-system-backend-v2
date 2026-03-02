@@ -6,6 +6,7 @@ import {
   HttpException,
   HttpStatus,
   Logger,
+  UnauthorizedException,
 } from '@nestjs/common';
 
 import { Error as MongooseError } from 'mongoose';
@@ -51,6 +52,13 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       errors = response["message"] ?? []
     }
 
+    // ✅ 2️⃣ Unauthorized
+    else if (exception instanceof UnauthorizedException) {
+      status = exception.getStatus()
+      const response = exception.getResponse();;
+      message = response['error'] ?? "Bad Request";
+      errors = response["message"] ?? []
+    }
 
     response.status(status).json({
       success: false,
