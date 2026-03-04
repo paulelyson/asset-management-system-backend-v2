@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { CreateCourseOfferingDto } from './dto/create-course-offering.dto';
 import { UpdateCourseOfferingDto } from './dto/update-course-offering.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { CourseOffering, CourseOfferingDocument } from './schemas/course-offering.schema';
+import {
+  CourseOffering,
+  CourseOfferingDocument,
+} from './schemas/course-offering.schema';
 import { Model } from 'mongoose';
 import { QueryCourseOfferingDto } from './dto/query-course-offering.dto';
 
@@ -22,7 +25,11 @@ export class CourseOfferingService {
   }
 
   find(query: QueryCourseOfferingDto) {
-    return this.courseOfferingModel.find().lean().exec();
+    const populate = [
+      { path: 'course', select: 'code title' },
+      { path: 'instructor', select: 'firstName middleName lastName' },
+    ];
+    return this.courseOfferingModel.find().populate(populate).lean().exec();
   }
 
   findOne(id: number) {
