@@ -8,11 +8,6 @@ export enum EquipmentCondition {
 }
 
 export enum EquipmentStatus {
-  ACQUIRED = 'acquired',
-  RETURNED = 'returned',
-}
-
-export enum EquipmentAvailability {
   AVAILABLE = 'available',
   BORROWED = 'borrowed',
   UNRETURNED = 'unreturned',

@@ -23,6 +23,11 @@ export class EquipmentController {
     return this.equipmentService.findOne(+id);
   }
 
+  @Get(':id/status')
+  getStatus(@Param('id') id: string) {
+    return this.equipmentService.getStatus(id);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateEquipmentDto: UpdateEquipmentDto) {
     return this.equipmentService.update(+id, updateEquipmentDto);

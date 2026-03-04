@@ -1,5 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { EquipmentAvailability, EquipmentCondition, EquipmentStatus, EquipmentTag, Matter } from '../enums/equipment.enum';
+import {
+  EquipmentCondition,
+  EquipmentStatus,
+  EquipmentTag,
+  Matter,
+} from '../enums/equipment.enum';
 import { HydratedDocument, Types } from 'mongoose';
 
 @Schema({ _id: false })
@@ -10,7 +15,8 @@ export class ConditionAndQuantity {
   @Prop({ required: true, min: 0 })
   quantity: number;
 }
-export const ConditionAndQuantitySchema = SchemaFactory.createForClass(ConditionAndQuantity);
+export const ConditionAndQuantitySchema =
+  SchemaFactory.createForClass(ConditionAndQuantity);
 
 @Schema({ _id: false })
 export class EquipmentImage {
@@ -23,7 +29,8 @@ export class EquipmentImage {
   @Prop({ required: true })
   original: string;
 }
-export const EquipmentImageSchema = SchemaFactory.createForClass(EquipmentImage);
+export const EquipmentImageSchema =
+  SchemaFactory.createForClass(EquipmentImage);
 
 /* =======================================
    MAIN SCHEMA
@@ -72,9 +79,6 @@ export class Equipment {
   @Prop()
   description: string;
 
-  @Prop({ enum: EquipmentStatus, default: EquipmentStatus.ACQUIRED })
-  status: EquipmentStatus;
-
   @Prop()
   dateAcquired: Date;
 
@@ -104,12 +108,6 @@ export class Equipment {
 
   @Prop()
   warrantyPeriod: Date;
-
-  @Prop({
-    enum: EquipmentAvailability,
-    default: EquipmentAvailability.AVAILABLE,
-  })
-  availability?: EquipmentAvailability;
 
   @Prop({ default: false, select: false }) // hidden unless explicitly selected
   deleted?: boolean;

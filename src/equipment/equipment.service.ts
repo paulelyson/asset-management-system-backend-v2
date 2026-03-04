@@ -29,6 +29,10 @@ export class EquipmentService {
     return `This action returns a #${id} equipment`;
   }
 
+  getStatus(equipmentId: string) {
+    return `This action returns a #${equipmentId} status`;
+  }
+
   update(id: number, updateEquipmentDto: UpdateEquipmentDto) {
     return `This action updates a #${id} equipment`;
   }
