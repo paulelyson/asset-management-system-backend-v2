@@ -25,6 +25,10 @@ export class ResponseInterceptor<T>
     return next.handle().pipe(
       map((resp: any) => ({
         data: resp?.data ?? resp,
+        total: resp?.total ?? 0,
+        page: resp?.page ?? 1,
+        limit: resp?.limit ?? 25,
+        hasNextPage: resp?.hasNextPage ?? false,
         message: resp?.message ?? 'Request successful',
         success: true,
       })),

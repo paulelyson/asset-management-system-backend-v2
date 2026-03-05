@@ -5,12 +5,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { BorrowedEquipment, BorrowedEquipmentDocument } from './schemas/borrowed-equipment.schema';
 import { Model } from 'mongoose';
 import { QueryBorrowedEquipmentDto } from './dto/query-borrowed-equipment.dto';
+import { BorrowedEquipmentQueryRepository } from './borrowed-equipment.query.repository';
 
 @Injectable()
 export class BorrowedEquipmentService {
   constructor(
     @InjectModel(BorrowedEquipment.name)
     private borrowedEquipmentModel: Model<BorrowedEquipmentDocument>,
+    private readonly borrowedEquipmentQueryRepository: BorrowedEquipmentQueryRepository
   ) {}
 
   create(createBorrowedEquipmentDto: CreateBorrowedEquipmentDto) {
@@ -23,7 +25,8 @@ export class BorrowedEquipmentService {
   }
 
   find(query: QueryBorrowedEquipmentDto) {
-    return this.borrowedEquipmentModel.find().lean().exec();
+    // return this.borrowedEquipmentModel.find().lean().exec();
+    return this.borrowedEquipmentQueryRepository.findAllBorrowedEquipmentView({}, query)
   }
 
   findOne(id: number) {
