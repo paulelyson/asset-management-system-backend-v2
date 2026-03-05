@@ -1,15 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types, Document } from 'mongoose';
+import { EquipmentCondition } from 'src/equipment/enums/equipment.enum';
+import { BorrowedEquipmentStatus } from '../enums/borrowed-equipment.enum';
 
-@Schema({ _id: false, timestamps: true })
+@Schema({ timestamps: true })
 export class Transaction {
-  @Prop({
-    type: Types.ObjectId,
-    ref: 'Equipment',
-    required: true,
-  })
-  equipment: Types.ObjectId;
-
   @Prop({
     type: Number,
     required: true,
@@ -20,8 +15,16 @@ export class Transaction {
   @Prop({
     type: String,
     required: true,
+    enum: EquipmentCondition
   })
-  condition: string; // You can replace with enum if needed
+  condition: string; 
+
+  @Prop({
+    type: String,
+    required: true,
+    enum: BorrowedEquipmentStatus
+  })
+  status: string;
 
   @Prop({
     type: String,
