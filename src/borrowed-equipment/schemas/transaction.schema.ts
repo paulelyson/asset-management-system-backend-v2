@@ -24,7 +24,7 @@ export class Transaction {
     required: true,
     enum: BorrowedEquipmentStatus
   })
-  status: string;
+  status: BorrowedEquipmentStatus;
 
   @Prop({
     type: String,

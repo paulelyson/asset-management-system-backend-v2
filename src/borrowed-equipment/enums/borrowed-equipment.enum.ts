@@ -17,3 +17,12 @@ export enum BorrowedEquipmentStatus {
   CANCELLED = 'cancelled',
   SYSTEM_RESET = 'system_reset',
 }
+
+export const STATUS_FLOW: BorrowedEquipmentStatus[] = [
+  BorrowedEquipmentStatus.REQUESTED,
+  BorrowedEquipmentStatus.FACULTY_APPROVED,
+  BorrowedEquipmentStatus.OIC_APPROVED,
+  BorrowedEquipmentStatus.RELEASED,
+  BorrowedEquipmentStatus.MARK_RETURNED,
+  BorrowedEquipmentStatus.RETURNED,
+];
