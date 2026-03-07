@@ -19,31 +19,77 @@ export class BorrowedEquipmentQueryRepository {
     paginate: QueryBorrowedEquipmentDto,
   ) {
     const skip = (paginate.page - 1) * paginate.limit;
+
     const pipeline: PipelineStage[] = [
-      {
-        $match: filter,
-      },
+      /**
+       * unwind borrowed equipment
+       */
       {
         $unwind: {
           path: '$borrowedEquipment',
         },
       },
+      /**
+       * flatten
+       * borrowedEquipment.equipment as equipment
+       * borrowedEquipment.quantity as quantity
+       * borrowedEquipment.transactions as transaction
+       */
       {
         $addFields: {
           borrower: { $toObjectId: '$borrower' },
           courseOffering: { $toObjectId: '$courseOffering' },
-          'borrowedEquipment.equipment': {
-            $toObjectId: '$borrowedEquipment.equipment',
-          },
+          equipment: { $toObjectId: '$borrowedEquipment.equipment' },
+          quantity: '$borrowedEquipment.quantity',
+          transactions: '$borrowedEquipment.transactions',
         },
       },
+      {
+        $unset: 'borrowedEquipment',
+      },
+      /**
+       * populate equiopment
+       */
+      {
+        $lookup: {
+          from: 'equipment',
+          let: { equipmentId: '$equipment' },
+          pipeline: [
+            { $match: { $expr: { $eq: ['$_id', '$$equipmentId'] } } },
+            { $project: { name: 1, type: 1, images: 1 } },
+          ],
+          as: 'equipment',
+        },
+      },
+      {
+        $unwind: '$equipment',
+      },
+      /**
+       * populate borrower
+       */
+      {
+        $lookup: {
+          from: 'users',
+          let: { borrowerId: '$borrower' }, // pass the borrower field
+          pipeline: [
+            { $match: { $expr: { $eq: ['$_id', '$$borrowerId'] } } },
+            { $project: { firstName: 1, lastName: 1, roles: 1 } }, // only these fields
+          ],
+          as: 'borrower',
+        },
+      },
+      {
+        $unwind: '$borrower',
+      },
+      /**
+       * populate course offering
+       */
       {
         $lookup: {
           from: 'courseofferings',
           let: { courseOfferId: '$courseOffering' },
           pipeline: [
             { $match: { $expr: { $eq: ['$_id', '$$courseOfferId'] } } },
-
             // populate course (only name and code)
             {
               $lookup: {
@@ -57,7 +103,6 @@ export class BorrowedEquipmentQueryRepository {
               },
             },
             { $unwind: { path: '$course', preserveNullAndEmptyArrays: true } },
-
             // populate instructor (only firstName, lastName, roles)
             {
               $lookup: {
@@ -76,7 +121,6 @@ export class BorrowedEquipmentQueryRepository {
                 preserveNullAndEmptyArrays: true,
               },
             },
-
             // project courseOffering fields you want
             { $project: { code: 1, course: 1, instructor: 1 } },
           ],
@@ -86,51 +130,9 @@ export class BorrowedEquipmentQueryRepository {
       {
         $unwind: { path: '$courseOffering', preserveNullAndEmptyArrays: true },
       },
-      {
-        $lookup: {
-          from: 'users',
-          let: { borrowerId: '$borrower' }, // pass the borrower field
-          pipeline: [
-            { $match: { $expr: { $eq: ['$_id', '$$borrowerId'] } } },
-            { $project: { firstName: 1, lastName: 1, roles: 1 } }, // only these fields
-          ],
-          as: 'borrower',
-        },
-      },
-      {
-        $unwind: '$borrower',
-      },
-      {
-        $lookup: {
-          from: 'equipment',
-          let: { equipmentId: '$borrowedEquipment.equipment' },
-          pipeline: [
-            { $match: { $expr: { $eq: ['$_id', '$$equipmentId'] } } },
-            { $project: { name: 1, type: 1, images: 1 } },
-          ],
-          as: 'equipment',
-        },
-      },
-      {
-        $unwind: '$equipment',
-      },
-      {
-        /**
-         * look up equipment
-         */
-        $lookup: {
-          from: 'equipment',
-          let: { equipmentId: '$borrowedEquipment.equipment' },
-          pipeline: [
-            { $match: { $expr: { $eq: ['$_id', '$$equipmentId'] } } },
-            { $project: { name: 1, type: 1, images: 1 } },
-          ],
-          as: 'equipment',
-        },
-      },
-      {
-        $unwind: '$equipment',
-      },
+      /**
+       * face it
+       */
       {
         $facet: {
           data: [
@@ -159,27 +161,6 @@ export class BorrowedEquipmentQueryRepository {
         },
       },
     ];
-
-    // const pipeline = [
-    //   {
-    //     $addFields: {
-    //       borrowerz: {
-    //         $toObjectId: '$borrower',
-    //       },
-    //       courseOfferingz: {
-    //         $toObjectId: '$courseOffering',
-    //       },
-    //     },
-    //   },
-    //   {
-    //     $lookup: {
-    //       from: 'users',
-    //       localField: 'borrowerz',
-    //       foreignField: '_id',
-    //       as: 'borrower',
-    //     },
-    //   },
-    // ];
 
     const [result]: any[] = await this.model.aggregate(pipeline);
     return result;
