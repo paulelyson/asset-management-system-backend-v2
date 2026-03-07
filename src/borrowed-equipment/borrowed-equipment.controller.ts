@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
 import { BorrowedEquipmentService } from './borrowed-equipment.service';
 import { CreateBorrowedEquipmentDto } from './dto/create-borrowed-equipment.dto';
 import { UpdateBorrowedEquipmentDto } from './dto/update-borrowed-equipment.dto';
 import { QueryBorrowedEquipmentDto } from './dto/query-borrowed-equipment.dto';
+import { TransactionUpdateGuard } from './borrowed-equipment.guard';
 
 @Controller('borrowed-equipment')
 export class BorrowedEquipmentController {
@@ -23,6 +24,7 @@ export class BorrowedEquipmentController {
     return this.borrowedEquipmentService.findOne(+id);
   }
 
+  @UseGuards(TransactionUpdateGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateBorrowedEquipmentDto: UpdateBorrowedEquipmentDto) {
     return this.borrowedEquipmentService.update(+id, updateBorrowedEquipmentDto);
