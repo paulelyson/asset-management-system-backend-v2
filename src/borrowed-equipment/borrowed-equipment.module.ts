@@ -5,9 +5,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { BorrowedEquipment, BorrowedEquipmentSchema } from './schemas/borrowed-equipment.schema';
 import { BorrowedEquipmentItemSchema } from './schemas/borrowed-equipment-item.schema';
 import { BorrowedEquipmentQueryRepository } from './borrowed-equipment.query.repository';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   imports: [
+    UserModule,
     MongooseModule.forFeature([{name: BorrowedEquipment.name, schema: BorrowedEquipmentSchema}])
   ],
   controllers: [BorrowedEquipmentController],
