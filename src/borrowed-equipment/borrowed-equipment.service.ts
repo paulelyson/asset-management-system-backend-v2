@@ -8,6 +8,7 @@ import { QueryBorrowedEquipmentDto } from './dto/query-borrowed-equipment.dto';
 import { BorrowedEquipmentQueryRepository } from './borrowed-equipment.query.repository';
 import { Transaction } from './schemas/transaction.schema';
 import { BorrowedEquipmentStatus, STATUS_FLOW } from './enums/borrowed-equipment.enum';
+import { TransactionDto } from './dto/transaction.dto';
 
 @Injectable()
 export class BorrowedEquipmentService {
@@ -54,6 +55,13 @@ export class BorrowedEquipmentService {
     return `This action removes a #${id} borrowedEquipment`;
   }
 
+  addTransaction(id: string, equipmentId: string, dto: TransactionDto) {
+    return this.borrowedEquipmentModel.findOneAndUpdate(
+    { _id: id, "borrowedEquipment.equipment": equipmentId,},
+    { $push: { "borrowedEquipment.$.transactions": dto } },
+    { new: true },
+  );
+  }
 
   private getAccumulatedStatus(transactions: Transaction[]){
     let accumulated: Pick<Transaction, "status" | "quantity">[]= [];

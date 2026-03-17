@@ -4,6 +4,7 @@ import { CreateBorrowedEquipmentDto } from './dto/create-borrowed-equipment.dto'
 import { UpdateBorrowedEquipmentDto } from './dto/update-borrowed-equipment.dto';
 import { QueryBorrowedEquipmentDto } from './dto/query-borrowed-equipment.dto';
 import { TransactionUpdateGuard } from './borrowed-equipment.guard';
+import { TransactionDto } from './dto/transaction.dto';
 
 @Controller('borrowed-equipment')
 export class BorrowedEquipmentController {
@@ -28,6 +29,15 @@ export class BorrowedEquipmentController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateBorrowedEquipmentDto: UpdateBorrowedEquipmentDto) {
     return this.borrowedEquipmentService.update(+id, updateBorrowedEquipmentDto);
+  }
+
+  @Patch(':borrowId/equipment/:equipmentId/transactions')
+  addTransaction(
+    @Param('borrowId') borrowId: string,
+    @Param('equipmentId') equipmentId: string,
+    @Body() transaction: TransactionDto,
+  ) {
+    return this.borrowedEquipmentService.addTransaction(borrowId, equipmentId, transaction);
   }
 
   @Delete(':id')

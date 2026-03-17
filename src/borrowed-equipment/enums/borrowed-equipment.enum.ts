@@ -6,8 +6,8 @@ export enum BorrowPurpose {
 
 export enum BorrowedEquipmentStatus {
   REQUESTED = 'requested',
-  FACULTY_APPROVED = 'faculty_approved',
-  FACULTY_REJECTED = 'faculty_rejected',
+  FACULTY_APPROVED = 'instructor_approved',
+  FACULTY_REJECTED = 'instructor_rejected',
   OIC_APPROVED = 'oic_approved',
   OIC_REJECTED = 'oic_rejected',
   RELEASED = 'released',
