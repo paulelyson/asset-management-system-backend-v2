@@ -30,6 +30,13 @@ export class Transaction {
     type: String,
   })
   remarks?: string;
+
+  @Prop({
+    type: Types.ObjectId,
+    ref: 'User',
+    required: true,
+  })
+  updatedBy: Types.ObjectId;
 }
 
 export const TransactionSchema = SchemaFactory.createForClass(Transaction);

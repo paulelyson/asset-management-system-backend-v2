@@ -1,4 +1,4 @@
-import { IsEnum, IsInt, IsOptional, IsString, Min } from "class-validator";
+import { IsEnum, IsInt, IsMongoId, IsOptional, IsString, Min } from "class-validator";
 import { EquipmentCondition } from "src/equipment/enums/equipment.enum";
 import { BorrowedEquipmentStatus } from "../enums/borrowed-equipment.enum";
 
@@ -16,4 +16,6 @@ export class TransactionDto {
   @IsOptional()
   @IsString()
   remarks?: string;
+
+  updatedBy: string;
 }
