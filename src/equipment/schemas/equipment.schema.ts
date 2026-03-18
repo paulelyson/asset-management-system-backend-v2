@@ -91,8 +91,8 @@ export class Equipment {
   @Prop({ default: false })
   hasTag: boolean;
 
-  @Prop()
-  checkedBy: string;
+  @Prop({ type: Types.ObjectId, ref: 'User' })
+  checkedBy?: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'Department', required: true })
   department: Types.ObjectId;

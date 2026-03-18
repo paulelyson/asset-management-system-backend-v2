@@ -22,7 +22,29 @@ export class EquipmentService {
   }
 
   find(query: QueryEquipmentDto) {
-    return this.departmentModel.find().lean().exec();
+    const { page, limit, department, search, categories, brand, type } = query;
+    const filter = {
+      ...(department && { department }),
+      ...(search && { name: { $regex: search, $options: 'i' } }),
+      ...(categories && { categories: { $in: categories } }),
+      ...(brand && { brand }),
+      ...(type && { type }),
+    };
+    
+    const equipments =  this.departmentModel
+    .find(filter)
+    .skip(limit * (page - 1))
+    .limit(limit)
+    .lean()
+    .exec();
+
+    const total = this.departmentModel.countDocuments().exec();
+    return Promise.all([equipments, total]).then(([data, total]) => ({
+      data,
+      total,
+      page,
+      limit,
+    }));
   }
 
   findOne(id: number) {
