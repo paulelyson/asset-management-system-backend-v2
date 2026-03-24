@@ -30,6 +30,12 @@ export class BorrowedEquipmentQueryRepository {
         },
       },
       /**
+       * match filter
+       */
+      {
+        $match: filter,
+      },
+      /**
        * flatten
        * borrowedEquipment.equipment as equipment
        * borrowedEquipment.quantity as quantity
@@ -48,7 +54,7 @@ export class BorrowedEquipmentQueryRepository {
         $unset: 'borrowedEquipment',
       },
       /**
-       * populate equiopment
+       * populate equipment
        */
       {
         $lookup: {

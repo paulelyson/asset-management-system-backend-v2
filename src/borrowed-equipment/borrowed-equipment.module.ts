@@ -14,5 +14,6 @@ import { UserModule } from 'src/user/user.module';
   ],
   controllers: [BorrowedEquipmentController],
   providers: [BorrowedEquipmentService, BorrowedEquipmentQueryRepository],
+  exports: [BorrowedEquipmentQueryRepository]
 })
 export class BorrowedEquipmentModule {}

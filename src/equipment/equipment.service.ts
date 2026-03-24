@@ -4,16 +4,20 @@ import { UpdateEquipmentDto } from './dto/update-equipment.dto';
 import { QueryEquipmentDto } from './dto/query-equipment.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Equipment, EquipmentDocument } from './schemas/equipment.schema';
-import { Model } from 'mongoose';
+import { get, Model } from 'mongoose';
+import { getAccumulatedStatus } from 'src/common/utils/transaction.util';
+import { BorrowedEquipmentQueryRepository } from 'src/borrowed-equipment/borrowed-equipment.query.repository';
 
 @Injectable()
 export class EquipmentService {
   constructor(
     @InjectModel(Equipment.name)
-    private departmentModel: Model<EquipmentDocument>,
+    private equipmentModel: Model<EquipmentDocument>,
+    private readonly borrowedEquipmentQueryRepository: BorrowedEquipmentQueryRepository
+    
   ) {}
   create(createEquipmentDto: CreateEquipmentDto) {
-    const equipment = new this.departmentModel(createEquipmentDto);
+    const equipment = new this.equipmentModel(createEquipmentDto);
     return equipment.save();
   }
 
@@ -31,35 +35,47 @@ export class EquipmentService {
       ...(type && { type }),
     };
     
-    const equipments =  this.departmentModel
+    const equipments =  this.equipmentModel
     .find(filter)
     .skip(limit * (page - 1))
     .limit(limit)
     .lean()
     .exec();
 
-    const total = this.departmentModel.countDocuments().exec();
+    const total = this.equipmentModel.countDocuments().exec();
     return Promise.all([equipments, total]).then(([data, total]) => ({
       data,
       total,
       page,
       limit,
+      hasNextPage: page * limit < total,
     }));
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} equipment`;
+  findOne(id: string) {
+    return this.equipmentModel.findById(id).exec();
   }
 
-  getStatus(equipmentId: string) {
-    return `This action returns a #${equipmentId} status`;
+  getStatus(id: string) {
+    const filter = { "borrowedEquipment.equipment": id };
+    const paginate = { page: 1, limit: 100 };
+
+    const accumulatedStatus = this.borrowedEquipmentQueryRepository
+    .findAllBorrowedEquipmentView(filter, paginate)
+    .then(resp=> resp.data[0] ?? null)
+    .then(equipment=> {
+      if(!equipment) return [];
+      const accumulatedStatus = getAccumulatedStatus(equipment.transactions);
+      return accumulatedStatus;
+    })
+    return accumulatedStatus;
   }
 
-  update(id: number, updateEquipmentDto: UpdateEquipmentDto) {
+  update(id: string, updateEquipmentDto: UpdateEquipmentDto) {
     return `This action updates a #${id} equipment`;
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} equipment`;
   }
 }
