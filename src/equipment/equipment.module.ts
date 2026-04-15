@@ -4,6 +4,7 @@ import { EquipmentController } from './equipment.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Equipment, EquipmentSchema } from './schemas/equipment.schema';
 import { BorrowedEquipmentModule } from 'src/borrowed-equipment/borrowed-equipment.module';
+import { EquipmentRepository } from './equipment.repository';
 
 @Module({
   imports: [
@@ -11,6 +12,6 @@ import { BorrowedEquipmentModule } from 'src/borrowed-equipment/borrowed-equipme
     BorrowedEquipmentModule
   ],
   controllers: [EquipmentController],
-  providers: [EquipmentService],
+  providers: [EquipmentService, EquipmentRepository],
 })
 export class EquipmentModule {}
