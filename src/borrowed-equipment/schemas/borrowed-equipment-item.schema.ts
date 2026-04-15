@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Types } from "mongoose";
 import { Transaction, TransactionSchema } from "./transaction.schema";
 
-@Schema({ _id: false })
+@Schema()
 export class BorrowedEquipmentItem {
   @Prop({
     type: Types.ObjectId,

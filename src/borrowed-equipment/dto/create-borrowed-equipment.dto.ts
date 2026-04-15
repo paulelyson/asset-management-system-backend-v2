@@ -9,8 +9,6 @@ export class CreateBorrowedEquipmentDto {
   @IsMongoId()
   courseOffering: string;
 
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => TransactionDto)
-  transaction: TransactionDto[];
+  // TODO
+  // validation for Borrowed Equipment Transaction esp on updatedBy field
 }
