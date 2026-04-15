@@ -43,6 +43,7 @@ export class BorrowedEquipmentQueryRepository {
        */
       {
         $addFields: {
+          trackId: '$borrowedEquipment._id', // for tracking the original borrowedEquipment item
           borrower: { $toObjectId: '$borrower' },
           courseOffering: { $toObjectId: '$courseOffering' },
           equipment: { $toObjectId: '$borrowedEquipment.equipment' },
@@ -97,18 +98,31 @@ export class BorrowedEquipmentQueryRepository {
           pipeline: [
             { $match: { $expr: { $eq: ['$_id', '$$courseOfferId'] } } },
             // populate course (only name and code)
-            {
-              $lookup: {
-                from: 'courses',
-                let: { courseId: { $toObjectId: '$course' } },
-                pipeline: [
-                  { $match: { $expr: { $eq: ['$_id', '$$courseId'] } } },
-                  { $project: { name: 1, code: 1 } },
-                ],
-                as: 'course',
+              {
+                $lookup: {
+                  from: 'courses',
+                  let: { courseId: { $toObjectId: '$course' } },
+                  pipeline: [
+                    { $match: { $expr: { $eq: ['$_id', '$$courseId'] } } },
+                    // populate department inside course
+                    {
+                      $lookup: {
+                        from: 'departments',
+                        let: { departmentId:  { $toObjectId: '$department' } },
+                        pipeline: [
+                          { $match: { $expr: { $eq: ['$_id', '$$departmentId'] } } },
+                          { $project: { name: 1 } },
+                        ],
+                        as: 'department',
+                      },
+                    },
+                    { $unwind: { path: '$department', preserveNullAndEmptyArrays: true } },
+                    { $project: { name: 1, code: 1, department: 1 } },
+                  ],
+                  as: 'course',
+                },
               },
-            },
-            { $unwind: { path: '$course', preserveNullAndEmptyArrays: true } },
+              { $unwind: { path: '$course', preserveNullAndEmptyArrays: true } },
             // populate instructor (only firstName, lastName, roles)
             {
               $lookup: {
