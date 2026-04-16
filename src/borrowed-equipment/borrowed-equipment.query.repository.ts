@@ -21,29 +21,11 @@ export class BorrowedEquipmentQueryRepository {
     const skip = (paginate.page - 1) * paginate.limit;
 
     const pipeline: PipelineStage[] = [
-      /**
-       * unwind borrowed equipment
-       */
-      {
-        $unwind: {
-          path: '$borrowedEquipment',
-        },
-      },
-      /**
-       * match filter
-       */
-      {
-        $match: filter,
-      },
-      /**
-       * flatten
-       * borrowedEquipment.equipment as equipment
-       * borrowedEquipment.quantity as quantity
-       * borrowedEquipment.transactions as transaction
-       */
+      { $unwind: { path: '$borrowedEquipment' } },
+      { $match: filter },
       {
         $addFields: {
-          trackId: '$borrowedEquipment._id', // for tracking the original borrowedEquipment item
+          trackId: '$borrowedEquipment._id',
           borrower: { $toObjectId: '$borrower' },
           courseOffering: { $toObjectId: '$courseOffering' },
           equipment: { $toObjectId: '$borrowedEquipment.equipment' },
@@ -51,12 +33,69 @@ export class BorrowedEquipmentQueryRepository {
           transactions: '$borrowedEquipment.transactions',
         },
       },
+      { $unset: 'borrowedEquipment' },
+
+      // ✅ 1. Collect all updatedBy IDs from the transactions array in one lookup
       {
-        $unset: 'borrowedEquipment',
+        $lookup: {
+          from: 'users',
+          let: {
+            updatedByIds: {
+              $map: {
+                input: '$transactions',
+                as: 't',
+                in: { $toObjectId: '$$t.updatedBy' },
+              },
+            },
+          },
+          pipeline: [
+            { $match: { $expr: { $in: ['$_id', '$$updatedByIds'] } } },
+            { $project: { firstName: 1, lastName: 1, roles: 1 } },
+          ],
+          as: '_updatedByUsers',
+        },
       },
-      /**
-       * populate equipment
-       */
+
+      // ✅ 2. Map over transactions and replace updatedBy string with the populated user object
+      {
+        $addFields: {
+          transactions: {
+            $map: {
+              input: '$transactions',
+              as: 't',
+              in: {
+                $mergeObjects: [
+                  '$$t',
+                  {
+                    updatedBy: {
+                      $arrayElemAt: [
+                        {
+                          $filter: {
+                            input: '$_updatedByUsers',
+                            as: 'u',
+                            cond: {
+                              $eq: [
+                                '$$u._id',
+                                { $toObjectId: '$$t.updatedBy' },
+                              ],
+                            },
+                          },
+                        },
+                        0,
+                      ],
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+
+      // ✅ 3. Clean up the temp array
+      { $unset: '_updatedByUsers' },
+
+      // --- rest of your pipeline unchanged ---
       {
         $lookup: {
           from: 'equipment',
@@ -68,62 +107,58 @@ export class BorrowedEquipmentQueryRepository {
           as: 'equipment',
         },
       },
-      {
-        $unwind: '$equipment',
-      },
-      /**
-       * populate borrower
-       */
+      { $unwind: '$equipment' },
       {
         $lookup: {
           from: 'users',
-          let: { borrowerId: '$borrower' }, // pass the borrower field
+          let: { borrowerId: '$borrower' },
           pipeline: [
             { $match: { $expr: { $eq: ['$_id', '$$borrowerId'] } } },
-            { $project: { firstName: 1, lastName: 1, roles: 1 } }, // only these fields
+            { $project: { firstName: 1, lastName: 1, roles: 1 } },
           ],
           as: 'borrower',
         },
       },
-      {
-        $unwind: '$borrower',
-      },
-      /**
-       * populate course offering
-       */
+      { $unwind: '$borrower' },
       {
         $lookup: {
           from: 'courseofferings',
           let: { courseOfferId: '$courseOffering' },
           pipeline: [
             { $match: { $expr: { $eq: ['$_id', '$$courseOfferId'] } } },
-            // populate course (only name and code)
-              {
-                $lookup: {
-                  from: 'courses',
-                  let: { courseId: { $toObjectId: '$course' } },
-                  pipeline: [
-                    { $match: { $expr: { $eq: ['$_id', '$$courseId'] } } },
-                    // populate department inside course
-                    {
-                      $lookup: {
-                        from: 'departments',
-                        let: { departmentId:  { $toObjectId: '$department' } },
-                        pipeline: [
-                          { $match: { $expr: { $eq: ['$_id', '$$departmentId'] } } },
-                          { $project: { name: 1 } },
-                        ],
-                        as: 'department',
-                      },
+            {
+              $lookup: {
+                from: 'courses',
+                let: { courseId: { $toObjectId: '$course' } },
+                pipeline: [
+                  { $match: { $expr: { $eq: ['$_id', '$$courseId'] } } },
+                  {
+                    $lookup: {
+                      from: 'departments',
+                      let: { departmentId: { $toObjectId: '$department' } },
+                      pipeline: [
+                        {
+                          $match: {
+                            $expr: { $eq: ['$_id', '$$departmentId'] },
+                          },
+                        },
+                        { $project: { name: 1 } },
+                      ],
+                      as: 'department',
                     },
-                    { $unwind: { path: '$department', preserveNullAndEmptyArrays: true } },
-                    { $project: { name: 1, code: 1, department: 1 } },
-                  ],
-                  as: 'course',
-                },
+                  },
+                  {
+                    $unwind: {
+                      path: '$department',
+                      preserveNullAndEmptyArrays: true,
+                    },
+                  },
+                  { $project: { name: 1, code: 1, department: 1 } },
+                ],
+                as: 'course',
               },
-              { $unwind: { path: '$course', preserveNullAndEmptyArrays: true } },
-            // populate instructor (only firstName, lastName, roles)
+            },
+            { $unwind: { path: '$course', preserveNullAndEmptyArrays: true } },
             {
               $lookup: {
                 from: 'users',
@@ -141,7 +176,6 @@ export class BorrowedEquipmentQueryRepository {
                 preserveNullAndEmptyArrays: true,
               },
             },
-            // project courseOffering fields you want
             { $project: { code: 1, course: 1, instructor: 1 } },
           ],
           as: 'courseOffering',
@@ -150,9 +184,6 @@ export class BorrowedEquipmentQueryRepository {
       {
         $unwind: { path: '$courseOffering', preserveNullAndEmptyArrays: true },
       },
-      /**
-       * face it
-       */
       {
         $facet: {
           data: [
@@ -160,7 +191,6 @@ export class BorrowedEquipmentQueryRepository {
             { $skip: skip },
             { $limit: paginate.limit },
           ],
-
           totalCount: [{ $count: 'count' }],
         },
       },
@@ -175,9 +205,7 @@ export class BorrowedEquipmentQueryRepository {
           total: 1,
           page: paginate.page,
           limit: paginate.limit,
-          hasNextPage: {
-            $gt: ['$total', paginate.page * paginate.limit],
-          },
+          hasNextPage: { $gt: ['$total', paginate.page * paginate.limit] },
         },
       },
     ];
