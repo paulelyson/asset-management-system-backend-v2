@@ -32,7 +32,6 @@ export class BorrowedEquipmentController {
     return this.borrowedEquipmentService.update(+id, updateBorrowedEquipmentDto);
   }
 
-  @UseGuards(AuthGuard)
   @Patch(':borrowId/equipment/:equipmentId/transactions')
   addTransaction(
     @Param('borrowId') borrowId: string,
