@@ -21,8 +21,8 @@ export class BorrowedEquipmentQueryRepository {
     const skip = (paginate.page - 1) * paginate.limit;
 
     const pipeline: PipelineStage[] = [
-      { $unwind: { path: '$borrowedEquipment' } },
       { $match: filter },
+      { $unwind: { path: '$borrowedEquipment' } },
       {
         $addFields: {
           trackId: '$borrowedEquipment._id',
@@ -153,7 +153,7 @@ export class BorrowedEquipmentQueryRepository {
                       preserveNullAndEmptyArrays: true,
                     },
                   },
-                  { $project: { name: 1, code: 1, department: 1 } },
+                  { $project: { title: 1, code: 1, department: 1 } },
                 ],
                 as: 'course',
               },

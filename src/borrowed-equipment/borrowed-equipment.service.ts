@@ -31,9 +31,15 @@ export class BorrowedEquipmentService {
     return `This action returns all borrowedEquipment`;
   }
 
-  find(query: QueryBorrowedEquipmentDto) {
+  find(query: QueryBorrowedEquipmentDto, req: any) {
+    const filter = {
+      $or: [
+        { borrower: req.user._id },
+        { instructor: req.user._id }
+      ],
+    };
     return this.borrowedEquipmentQueryRepository
-      .findAllBorrowedEquipmentView({}, query)
+      .findAllBorrowedEquipmentView(filter, query)
       .then((resp) => {
         let borrowedEquipment: any[] = resp?.data ?? [];
         borrowedEquipment = borrowedEquipment.map((eqpmnt) => ({

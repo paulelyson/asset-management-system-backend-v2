@@ -22,8 +22,8 @@ export class BorrowedEquipmentController {
   }
 
   @Get()
-  find(@Query() query: QueryBorrowedEquipmentDto) {
-    return this.borrowedEquipmentService.find(query);
+  find(@Query() query: QueryBorrowedEquipmentDto, @Req() req: any,) {
+    return this.borrowedEquipmentService.find(query, req);
   }
 
   @Get(':id')

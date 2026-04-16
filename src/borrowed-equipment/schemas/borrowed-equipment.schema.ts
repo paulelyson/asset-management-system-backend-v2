@@ -35,6 +35,12 @@ export class BorrowedEquipment {
   @Prop({ type: String })
   remarks?: string;
 
+  @Prop({ type: String })
+  instructor?: string;
+
+  @Prop({ type: String })
+  department?: string;
+
   @Prop({
     type: DateOfUseSchema,
     required: true,

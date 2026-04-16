@@ -26,8 +26,13 @@ export class CourseOfferingService {
 
   find(query: QueryCourseOfferingDto) {
     const populate = [
-      { path: 'course', select: 'code title' },
+      {
+        path: 'course',
+        select: 'code title department',
+        populate: [{ path: 'department', select: 'code name' }],
+      },
       { path: 'instructor', select: 'firstName middleName lastName' },
+      { path: 'schedule.location', select: 'name type' },
     ];
     return this.courseOfferingModel.find().populate(populate).lean().exec();
   }
