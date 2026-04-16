@@ -12,7 +12,12 @@ export class BorrowedEquipmentController {
   constructor(private readonly borrowedEquipmentService: BorrowedEquipmentService) {}
 
   @Post()
-  create(@Body() createBorrowedEquipmentDto: CreateBorrowedEquipmentDto) {
+  create(@Body() createBorrowedEquipmentDto: CreateBorrowedEquipmentDto, @Req() req: any) {
+    const borrowedEquipment = createBorrowedEquipmentDto.borrowedEquipment.map(eqpmnt => {
+      const transactions = eqpmnt.transactions.map(tx => ({... tx, updatedBy: req.user._id}))
+      return {... eqpmnt, transactions: transactions}
+    })
+    createBorrowedEquipmentDto.borrowedEquipment = borrowedEquipment;
     return this.borrowedEquipmentService.create(createBorrowedEquipmentDto);
   }
 
