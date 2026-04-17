@@ -11,6 +11,8 @@ import { QueryBorrowedEquipmentDto } from './dto/query-borrowed-equipment.dto';
 import { BorrowedEquipmentQueryRepository } from './borrowed-equipment.query.repository';
 import { TransactionDto } from './dto/transaction.dto';
 import { getAccumulatedStatus } from 'src/common/utils/transaction.util';
+import { hasRole } from 'src/common/utils/user.util';
+import { UserRole } from 'src/user/enums/role.enum';
 
 @Injectable()
 export class BorrowedEquipmentService {
@@ -32,12 +34,17 @@ export class BorrowedEquipmentService {
   }
 
   find(query: QueryBorrowedEquipmentDto, req: any) {
-    const filter = {
-      $or: [
-        { borrower: req.user._id },
-        { instructor: req.user._id }
-      ],
+    const userId = req.user._id;
+    const filter: any = {
+      $or: [{ borrower: userId }, { instructor: userId }],
     };
+    const dept = req.user.roles[0].department;
+    const role = UserRole.CHAIRMAN;
+    const userHasRole = hasRole(role, dept, req.user.roles);
+    if (userHasRole) {
+      filter.$or.push({ department: userId });
+    }
+    
     return this.borrowedEquipmentQueryRepository
       .findAllBorrowedEquipmentView(filter, query)
       .then((resp) => {
