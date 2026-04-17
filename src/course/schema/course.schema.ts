@@ -20,6 +20,11 @@ export class Course {
 
   @Prop({ type: Types.ObjectId, ref: 'Department', required: true })
   department: Types.ObjectId;
+
+  @Prop({
+    required: true,
+  })
+  units: number;
 }
 
 export const CourseSchema = SchemaFactory.createForClass(Course);

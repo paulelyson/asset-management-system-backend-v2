@@ -51,9 +51,6 @@ export class User {
   @Prop({ type: String, required: true, select: false })
   password: string;
 
-  @Prop({ type: Boolean, default: false })
-  activated: boolean;
-
   @Prop({
     type: String,
     enum: ['pending_approval', 'active', 'deactivated', 'rejected'],

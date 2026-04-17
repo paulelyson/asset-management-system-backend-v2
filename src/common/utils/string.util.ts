@@ -1,4 +1,6 @@
-
-
 export const toTitleCase = (str: string): string =>
-  str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  str
+    .toLowerCase()
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');

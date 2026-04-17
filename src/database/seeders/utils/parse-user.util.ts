@@ -1,32 +1,29 @@
 import { toTitleCase } from 'src/common/utils/string.util';
 import { CreateUserDto, UserRoleDto } from 'src/user/dto/create-user.dto';
 
+// CSV format: 'idNumber, LASTNAME, FIRSTNAME, MIDDLENAME, EMAIL'
+// middleName and email are optional — leave as empty string if absent
 
-
-/**
- * Parses a raw user string into a CreateUserDto.
- *
- * Input format:  '27737 DOE, JOHN SMITH'
- * Name structure: LASTNAME, FIRSTNAME MIDDLENAME
- */
 export const parseUserString = (
   raw: string,
   roles: UserRoleDto[],
 ): CreateUserDto => {
-  const spaceIndex = raw.indexOf(' ');
-  const idNumber = raw.slice(0, spaceIndex).trim();
-  const namePart = raw.slice(spaceIndex + 1).trim();
+  const [idNumber, lastNameRaw, firstNameRaw, middleNameRaw, emailRaw] = raw
+    .split(',')
+    .map((s) => s.trim());
 
-  const [lastNameRaw, restNameRaw] = namePart.split(',').map((s) => s.trim());
-  const [firstNameRaw, ...middleParts] = restNameRaw.split(' ');
+  if (!idNumber || !lastNameRaw || !firstNameRaw) {
+    throw new Error(
+      `Missing required fields (idNumber, lastName, firstName) in: "${raw}"`,
+    );
+  }
 
   const firstName = toTitleCase(firstNameRaw);
   const lastName = toTitleCase(lastNameRaw);
-  const middleName = middleParts.length
-    ? middleParts.map(toTitleCase).join(' ')
-    : undefined;
-
-  const email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@exampleemail.com`;
+  const middleName = middleNameRaw ? toTitleCase(middleNameRaw) : undefined;
+  const email =
+    emailRaw ||
+    `${firstName.toLowerCase()}.${lastName.toLowerCase()}@exampleemail.com`.split(' ').join('');
 
   return {
     firstName,

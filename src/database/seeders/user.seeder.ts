@@ -46,9 +46,7 @@ export class UsersSeeder {
           const messages = errors.flatMap((e) =>
             Object.values(e.constraints ?? {}),
           );
-          this.logger.warn(
-            `Validation failed for idNumber "${dto.idNumber}": ${messages.join(', ')}`,
-          );
+          this.logger.error(`Validation failed for idNumber "${dto.idNumber}": ${messages.join(', ')}`);
           failed++;
           continue;
         }
@@ -56,7 +54,7 @@ export class UsersSeeder {
         // ── 3. Skip duplicates ────────────────────────────────────────────────
         const exists = await this.userModel.exists({ idNumber: dto.idNumber });
         if (exists) {
-          this.logger.verbose(`Skipping existing user: ${dto.idNumber}`);
+          this.logger.warn(`Skipping existing user: ${dto.idNumber}`);
           skipped++;
           continue;
         }
