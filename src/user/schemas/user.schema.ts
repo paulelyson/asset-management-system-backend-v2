@@ -1,15 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
+import { UserRole } from '../enums/role.enum';
 
 export type UserDocument = HydratedDocument<User>;
-
-export type UserRole =
-  | 'administrator'
-  | 'chairman'
-  | 'lab_in_charge'
-  | 'instructor'
-  | 'assistant'
-  | 'student';
 
 export type UserStatus =
   | 'pending_approval'
@@ -47,14 +40,7 @@ export class User {
     {
       role: {
         type: String,
-        enum: [
-          'administrator',
-          'chairman',
-          'lab_in_charge',
-          'instructor',
-          'assistant',
-          'student',
-        ],
+        enum: UserRole,
         required: true,
       },
       department: { type: Types.ObjectId, ref: 'Department', required: true },

@@ -12,8 +12,9 @@ import {
   Min,
   Max,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { UserRole } from '../enums/role.enum';
+import { toTitleCase } from 'src/common/utils/string.util';
 
 export class UserRoleDto {
   @IsEnum(UserRole, {
@@ -30,14 +31,17 @@ export class UserRoleDto {
 export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
+  @Transform(({ value }) => toTitleCase(value))
   firstName: string;
 
   @IsString()
   @IsOptional()
+  @Transform(({ value }) => (value ? toTitleCase(value) : value))
   middleName?: string;
 
   @IsString()
   @IsNotEmpty()
+  @Transform(({ value }) => toTitleCase(value))
   lastName: string;
 
   @IsNumber()
