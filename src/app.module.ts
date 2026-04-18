@@ -15,6 +15,8 @@ import { BorrowedEquipmentModule } from './borrowed-equipment/borrowed-equipment
 import { AuthModule } from './auth/auth.module';
 import { AuthGuard } from './auth/auth.guard';
 import { UsersSeeder } from './database/seeders/user.seeder';
+import { Course } from './course/schema/course.schema';
+import { CourseOfferingsSeeder } from './database/seeders/course-offerings.seeder';
 
 const DATABASE = process.env.DATABASE || 'mongodb://127.0.0.1:27017/asset_mgt_local';
 
@@ -36,6 +38,6 @@ const DATABASE = process.env.DATABASE || 'mongodb://127.0.0.1:27017/asset_mgt_lo
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService, AuthGuard, UsersSeeder],
+  providers: [AppService, AuthGuard, UsersSeeder, CourseOfferingsSeeder],
 })
 export class AppModule {}
