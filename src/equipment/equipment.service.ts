@@ -57,6 +57,20 @@ export class EquipmentService {
     };
   }
 
+  getDistinctValues(field: string, query: QueryEquipmentDto) {
+    const ALLOWED_DISTINCT_FIELDS = ['brand', 'type', 'category', 'status'];
+    const filter: any = {}
+    if(query.department) {
+      filter.department = query.department;
+    }
+
+    if (!field || !ALLOWED_DISTINCT_FIELDS.includes(field)) {
+      throw new Error(`Invalid field for distinct values. Allowed fields: ${ALLOWED_DISTINCT_FIELDS.join(', ')}`);
+    }
+    return this.equipmentModel.distinct(field, filter).exec();
+  }
+
+
   findOne(id: string) {
     return this.equipmentModel.findById(id).exec();
   }

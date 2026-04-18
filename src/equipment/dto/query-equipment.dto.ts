@@ -20,4 +20,7 @@ export class QueryEquipmentDto extends PartialType(CreateEquipmentDto) {
 
    @IsOptional()
    search?: string;
+
+   @IsOptional()
+   department?: string;
 }

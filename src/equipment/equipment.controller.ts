@@ -18,6 +18,11 @@ export class EquipmentController {
     return this.equipmentService.find(query);
   }
 
+  @Get('distinct/:field')
+  getDistinctValues(@Param('field') field: string, @Query() query: QueryEquipmentDto) {
+    return this.equipmentService.getDistinctValues(field, query);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.equipmentService.findOne(id);
