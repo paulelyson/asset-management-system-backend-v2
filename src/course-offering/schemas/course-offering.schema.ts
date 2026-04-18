@@ -12,13 +12,24 @@ export class Schedule {
     required: true,
   })
   day: DayOfWeek;
-
-  @Prop({ required: true })
-  startTime: string;
-
-  @Prop({ required: true })
-  endTime: string;
-
+ 
+  /**
+   * null when isOpen is true (e.g. field work, OJT, open lab).
+   * Stored as "HH:mm" 24-hour format when set.
+   */
+  @Prop({ type: String, default: null })
+  startTime: string | null;
+ 
+  @Prop({ type: String, default: null })
+  endTime: string | null;
+ 
+  /**
+   * Flags a schedule entry that has no fixed time slot.
+   * Keeps startTime/endTime types clean (no sentinel strings like "open").
+   */
+  @Prop({ type: Boolean, default: false })
+  isOpen: boolean;
+ 
   @Prop({
     type: Types.ObjectId,
     ref: 'Location',
@@ -26,31 +37,44 @@ export class Schedule {
   })
   location: Types.ObjectId;
 }
-
+ 
 export const ScheduleSchema = SchemaFactory.createForClass(Schedule);
 
-/**
- * Course Offering Schema
- */
+// ─── Compound pre-save guard ─────────────────────────────────────────────────
+// Enforces: if !isOpen then both times must be present, and vice-versa.
+// Doing this at schema level means it's enforced regardless of the entry path
+// (API, seeder, direct Mongoose call).
+ScheduleSchema.pre('validate', function (next) {
+  const s = this as Schedule;
+  if (!s.isOpen && (!s.startTime || !s.endTime)) {
+    next(new Error('startTime and endTime are required when isOpen is false.'));
+  } else if (s.isOpen && (s.startTime || s.endTime)) {
+    next(new Error('startTime and endTime must be null when isOpen is true.'));
+  } else {
+    next();
+  }
+});
+
+// ─── Course Offering ──────────────────────────────────────────────────────────
 @Schema({ timestamps: true })
 export class CourseOffering {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true, unique: true, index: true })
   code: string;
-
+ 
   @Prop({
     type: Types.ObjectId,
     ref: 'Course',
     required: true,
   })
   course: Types.ObjectId;
-
+ 
   @Prop({
     type: Types.ObjectId,
     ref: 'User',
     required: true,
   })
   instructor: Types.ObjectId;
-
+ 
   @Prop({
     type: [ScheduleSchema],
     required: true,
