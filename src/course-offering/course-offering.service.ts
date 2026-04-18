@@ -34,7 +34,12 @@ export class CourseOfferingService {
       { path: 'instructor', select: 'firstName middleName lastName' },
       { path: 'schedule.location', select: 'name type' },
     ];
-    return this.courseOfferingModel.find().populate(populate).lean().exec();
+    return this.courseOfferingModel
+      .find()
+      .populate(populate)
+      .lean()
+      .sort({ code: 1 })
+      .exec();
   }
 
   findOne(id: number) {

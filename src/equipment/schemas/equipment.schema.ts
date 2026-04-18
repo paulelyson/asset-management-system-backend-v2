@@ -43,19 +43,19 @@ export type EquipmentDocument = HydratedDocument<Equipment>;
   versionKey: false,
 })
 export class Equipment {
-  @Prop({ required: true, trim: true })
+  @Prop({ trim: true, sparse: true })  // sparse: true allows multiple null values on a unique-like index
   serialNo: string;
 
-  @Prop({ required: true, trim: true })
+  @Prop({ required: true, trim: true, index: true }) // ✅ indexed — used in distinct()
   type: string;
 
-  @Prop({ type: [String], default: [] })
+  @Prop({ type: [String], default: [], index: true }) // ✅ indexed — used in distinct()
   categories: string[];
 
   @Prop({ required: true, trim: true })
   name: string;
 
-  @Prop({ trim: true })
+  @Prop({ trim: true, index: true }) // ✅ indexed — used in distinct()
   brand: string;
 
   @Prop({ trim: true })
@@ -73,13 +73,13 @@ export class Equipment {
   @Prop({ required: true })
   unit: string;
 
-  @Prop({ enum: Matter })
+  @Prop({ enum: Matter, default: Matter.SOLID})
   matter: Matter;
 
   @Prop()
   description: string;
 
-  @Prop()
+  @Prop({ index: true }) // ✅ indexed if you sort/filter by acquisition date
   dateAcquired: Date;
 
   @Prop({ type: [EquipmentImageSchema], default: [] })
@@ -94,22 +94,22 @@ export class Equipment {
   @Prop({ type: Types.ObjectId, ref: 'User' })
   checkedBy?: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'Department', required: true })
+  @Prop({ type: Types.ObjectId, ref: 'Department', required: true, index: true }) // ✅ always filter by this
   department: Types.ObjectId;
 
-  @Prop({ enum: EquipmentTag })
+  @Prop({ enum: EquipmentTag, index: true }) // ✅ indexed — likely filtered
   tag: EquipmentTag;
 
-  @Prop()
-  location: string;
+  @Prop({ type: Types.ObjectId, ref: 'Location', index: true }) // ✅ indexed — likely filtered
+  location?: Types.ObjectId;
 
   @Prop({ default: false })
   confirmed: boolean;
 
   @Prop()
-  warrantyPeriod: Date;
+  warrantyPeriod?: Date;
 
-  @Prop({ default: false, select: false }) // hidden unless explicitly selected
+  @Prop({ default: false, index: true, select: false }) // ✅ indexed — every query filters soft deletes
   deleted?: boolean;
 }
 
