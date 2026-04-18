@@ -10,5 +10,6 @@ import { Location, LocationSchema } from './schemas/location.schema';
   ],
   controllers: [LocationController],
   providers: [LocationService],
+  exports: [MongooseModule]
 })
 export class LocationModule {}
