@@ -1,12 +1,18 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { HydratedDocument, Types } from "mongoose";
-import { LocationType } from "../enums/location-types.enum";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument, Types } from 'mongoose';
+import { LocationType } from '../enums/location-types.enum';
 
-export type LocationDocument =  HydratedDocument<Location>;
+export type LocationDocument = HydratedDocument<Location>;
 
 @Schema({ timestamps: true })
 export class Location {
-  @Prop({ required: true, trim: true, uppercase: true })
+  @Prop({
+    required: true,
+    trim: true,
+    uppercase: true,
+    index: true,
+    unique: true,
+  })
   name: string;
 
   @Prop({
