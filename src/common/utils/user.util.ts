@@ -1,12 +1,18 @@
-import { UserRoleDto } from 'src/user/dto/create-user.dto';
+import { CreateDepartmentDto } from 'src/department/dto/create-department.dto';
 import { UserRole } from 'src/user/enums/role.enum';
+
+type DeptartmentWithId = CreateDepartmentDto & { _id: string };
+interface UserRoleDto {
+  role: UserRole;
+  department: DeptartmentWithId
+}
 
 /**
  * Checks if a user has a specific role within a specific department.
  */
-export const hasRole = (
+
+export const getRole = (
   role: UserRole,
-  departmentId: string,
   roles: UserRoleDto[],
-): boolean =>
-  roles.some((r) => r.role === role && r.department === departmentId);
+): UserRoleDto | undefined =>
+  roles.find((r) => r.role === role);

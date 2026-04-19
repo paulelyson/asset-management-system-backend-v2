@@ -11,7 +11,7 @@ import { QueryBorrowedEquipmentDto } from './dto/query-borrowed-equipment.dto';
 import { BorrowedEquipmentQueryRepository } from './borrowed-equipment.query.repository';
 import { TransactionDto } from './dto/transaction.dto';
 import { getAccumulatedStatus } from 'src/common/utils/transaction.util';
-import { hasRole } from 'src/common/utils/user.util';
+import { getRole } from 'src/common/utils/user.util';
 import { UserRole } from 'src/user/enums/role.enum';
 
 @Injectable()
@@ -38,13 +38,19 @@ export class BorrowedEquipmentService {
     const filter: any = {
       $or: [{ borrower: userId }, { instructor: userId }],
     };
-    const dept = req.user.roles[0].department;
-    const role = UserRole.CHAIRMAN;
-    const userHasRole = hasRole(role, dept, req.user.roles);
-    if (userHasRole) {
-      filter.$or.push({ department: userId });
+    const chairmanRole = UserRole.CHAIRMAN;
+    const assistantRole = UserRole.ASSISTANT;
+    const chairman = getRole(chairmanRole, req.user.roles);
+    const assistant = getRole(assistantRole, req.user.roles);
+
+    if (chairman) {
+      filter.$or.push({ department: chairman.department._id });
     }
-    
+
+    if (assistant) {
+      filter.$or.push({ department: assistant.department._id });
+    }
+
     return this.borrowedEquipmentQueryRepository
       .findAllBorrowedEquipmentView(filter, query)
       .then((resp) => {
@@ -55,6 +61,23 @@ export class BorrowedEquipmentService {
         }));
 
         resp.data = borrowedEquipment;
+        return resp;
+      })
+      .then((resp) => {
+        /**
+         * filter by status
+         */
+        if (query?.status && query.status?.length) {
+          let borrowedEquipment: any[] = resp?.data ?? [];
+          borrowedEquipment = borrowedEquipment.filter((eqpmnt) => {
+            return eqpmnt.accumulatedStatus.some((status) =>
+              query.status?.includes(status.status),
+            );
+          });
+
+          resp.data = borrowedEquipment;
+        }
+
         return resp;
       });
   }
