@@ -42,4 +42,8 @@ export class UserService {
   remove(id: number) {
     return `This action removes a #${id} user`;
   }
+
+  updatePassword(username: string, password: string) {
+    return this.userModel.findOneAndUpdate({ idNumber: username }, { password: password }).exec();
+  }
 }
