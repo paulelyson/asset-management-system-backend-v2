@@ -34,12 +34,12 @@ export class AuthService {
   ) {
     const user = await this.userService.findOne(username);
     if (!user) {
-      throw new UnauthorizedException('User not found');
+      throw new UnauthorizedException(['User not found']);
     }
 
     // Replace with bcrypt.compare() if you're hashing passwords (you should be)
     if (user.password !== currentPassword) {
-      throw new UnauthorizedException('Current password is incorrect');
+      throw new UnauthorizedException(['Current password is incorrect']);
     }
 
     await this.userService.updatePassword(username, newPassword);
