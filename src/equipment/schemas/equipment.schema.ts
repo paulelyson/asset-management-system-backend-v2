@@ -92,7 +92,7 @@ export class Equipment {
   hasTag: boolean;
 
   @Prop({ type: Types.ObjectId, ref: 'User' })
-  checkedBy?: Types.ObjectId;
+  updatedBy: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'Department', required: true, index: true }) // ✅ always filter by this
   department: Types.ObjectId;

@@ -8,6 +8,7 @@ import { Model, Types, PipelineStage } from 'mongoose';
 import { getAccumulatedStatus } from 'src/common/utils/transaction.util';
 import { BorrowedEquipmentQueryRepository } from 'src/borrowed-equipment/borrowed-equipment.query.repository';
 import { EquipmentRepository } from './equipment.repository';
+import { ChangeAction, ChangeStatus, EquipmentChangeLog, EquipmentChangeLogDocument } from 'src/equipment-change-log/schemas/equipment-change-log.schema';
 
 @Injectable()
 export class EquipmentService {
@@ -16,10 +17,23 @@ export class EquipmentService {
     private equipmentModel: Model<EquipmentDocument>,
     private readonly borrowedEquipmentQueryRepository: BorrowedEquipmentQueryRepository,
     private readonly equipmentRepository: EquipmentRepository,
+    @InjectModel(EquipmentChangeLog.name)
+    private readonly changeLogModel: Model<EquipmentChangeLogDocument>,
   ) {}
-  create(createEquipmentDto: CreateEquipmentDto) {
-    const equipment = new this.equipmentModel(createEquipmentDto);
-    return equipment.save();
+  async create(createEquipmentDto: CreateEquipmentDto) {
+    const equipment =  await this.equipmentModel.create(createEquipmentDto);
+
+    await this.changeLogModel.create({
+      equipment:   equipment._id,
+      action:      ChangeAction.CREATE,
+      changes:     [],              // no diff for create; it's a full new record
+      performedBy: equipment.updatedBy,
+      status:      ChangeStatus.PENDING,
+    })
+
+    // TODO: trigger notification to lab_in_charge + chairman
+
+    return equipment;
   }
 
   findAll() {

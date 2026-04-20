@@ -5,11 +5,13 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Equipment, EquipmentSchema } from './schemas/equipment.schema';
 import { BorrowedEquipmentModule } from 'src/borrowed-equipment/borrowed-equipment.module';
 import { EquipmentRepository } from './equipment.repository';
+import { EquipmentChangeLogModule } from 'src/equipment-change-log/equipment-change-log.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{name: Equipment.name, schema: EquipmentSchema}]),
-    BorrowedEquipmentModule
+    BorrowedEquipmentModule,
+    EquipmentChangeLogModule
   ],
   controllers: [EquipmentController],
   providers: [EquipmentService, EquipmentRepository],

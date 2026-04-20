@@ -113,7 +113,7 @@ export class CreateEquipmentDto {
 
   @IsMongoId()
   @IsOptional()
-  checkedBy?: string;
+  updatedBy: string;
 
   @IsMongoId()
   department: string; // required — no @IsOptional
